@@ -1,6 +1,12 @@
 /**
  * Aurora Aqua - GSAP Animations
- * Text animations, scroll triggers, and interactive effects
+ * PRODUCTION DOCTRINE BUILD
+ * 
+ * UI MOTION DRAG
+ * 
+ * Underwater = nothing reacts instantly.
+ * duration *= 1.3
+ * ease = "power2.out"
  */
 
 import gsap from 'gsap';
@@ -13,13 +19,45 @@ export class Animations {
     this.lenis = lenis;
     this.ctx = null;
     this.splitTexts = [];
+    this.isUnderwater = false;
+    
+    // UNDERWATER DRAG MULTIPLIER
+    this.durationMultiplier = 1;
+    this.underwaterEase = 'power2.out';
     
     this.init();
+    this.setupUnderwaterListener();
   }
 
   init() {
     // Create GSAP context for easy cleanup
     this.ctx = gsap.context(() => {});
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  // UNDERWATER PHYSICS
+  // ═══════════════════════════════════════════════════════════
+
+  setupUnderwaterListener() {
+    window.addEventListener('surfaceBreach', () => {
+      this.isUnderwater = true;
+      this.durationMultiplier = 1.3;
+    });
+    
+    window.addEventListener('applyUnderwaterPhysics', () => {
+      this.isUnderwater = true;
+      this.durationMultiplier = 1.3;
+    });
+  }
+
+  // Apply underwater drag to duration
+  getDuration(baseDuration) {
+    return baseDuration * this.durationMultiplier;
+  }
+
+  // Get ease (underwater overrides)
+  getEase(baseEase) {
+    return this.isUnderwater ? this.underwaterEase : baseEase;
   }
 
   // Initialize all page animations
@@ -70,9 +108,9 @@ export class Animations {
           gsap.to(wordInners, {
             y: '0%',
             opacity: 1,
-            duration: 0.8,
+            duration: this.getDuration(0.8),
             stagger: 0.03,
-            ease: 'power3.out'
+            ease: this.getEase('power3.out')
           });
         }
       });
@@ -91,8 +129,8 @@ export class Animations {
         },
         y: 20,
         opacity: 0,
-        duration: 0.6,
-        ease: 'power2.out'
+        duration: this.getDuration(0.6),
+        ease: this.getEase('power2.out')
       });
     });
 
@@ -106,9 +144,9 @@ export class Animations {
         },
         y: 60,
         opacity: 0,
-        duration: 0.8,
+        duration: this.getDuration(0.8),
         delay: i * 0.15,
-        ease: 'power3.out'
+        ease: this.getEase('power3.out')
       });
     });
 
@@ -123,9 +161,9 @@ export class Animations {
         y: 80,
         opacity: 0,
         rotateX: 10,
-        duration: 1,
+        duration: this.getDuration(1),
         delay: i * 0.1,
-        ease: 'power3.out'
+        ease: this.getEase('power3.out')
       });
     });
 
@@ -143,8 +181,8 @@ export class Animations {
         },
         x: isReverse ? 100 : -100,
         opacity: 0,
-        duration: 1,
-        ease: 'power3.out'
+        duration: this.getDuration(1),
+        ease: this.getEase('power3.out')
       });
       
       gsap.from(content, {
@@ -155,9 +193,9 @@ export class Animations {
         },
         x: isReverse ? -50 : 50,
         opacity: 0,
-        duration: 1,
+        duration: this.getDuration(1),
         delay: 0.2,
-        ease: 'power3.out'
+        ease: this.getEase('power3.out')
       });
     });
 
@@ -171,9 +209,9 @@ export class Animations {
         },
         x: -50,
         opacity: 0,
-        duration: 0.8,
+        duration: this.getDuration(0.8),
         delay: i * 0.1,
-        ease: 'power3.out'
+        ease: this.getEase('power3.out')
       });
     });
 
@@ -187,9 +225,9 @@ export class Animations {
         },
         y: 60,
         opacity: 0,
-        duration: 1,
+        duration: this.getDuration(1),
         delay: i * 0.15,
-        ease: 'power3.out'
+        ease: this.getEase('power3.out')
       });
     });
 
@@ -204,9 +242,9 @@ export class Animations {
         y: 40,
         opacity: 0,
         scale: 0.95,
-        duration: 0.6,
+        duration: this.getDuration(0.6),
         delay: i * 0.08,
-        ease: 'power2.out'
+        ease: this.getEase('power2.out')
       });
     });
 
@@ -220,9 +258,9 @@ export class Animations {
         },
         y: 60,
         opacity: 0,
-        duration: 0.8,
+        duration: this.getDuration(0.8),
         delay: i * 0.12,
-        ease: 'power3.out'
+        ease: this.getEase('power3.out')
       });
     });
 
@@ -237,9 +275,9 @@ export class Animations {
         y: 50,
         opacity: 0,
         scale: 0.9,
-        duration: 0.7,
+        duration: this.getDuration(0.7),
         delay: i * 0.1,
-        ease: 'back.out(1.5)'
+        ease: this.getEase('back.out(1.5)')
       });
     });
 

@@ -195,7 +195,20 @@ export class SceneManager {
       }
     }
 
-    this.renderer.render(this.scene, this.camera);
+    // Allow external render override (e.g. PostProcessing pipeline)
+    if (this.renderOverride) {
+      this.renderOverride(delta, elapsed);
+    } else {
+      this.renderer.render(this.scene, this.camera);
+    }
+  }
+
+  setRenderOverride(fn) {
+    this.renderOverride = fn;
+  }
+
+  clearRenderOverride() {
+    this.renderOverride = null;
   }
 
   dispose() {

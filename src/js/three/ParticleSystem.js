@@ -1,7 +1,11 @@
 /**
  * Aurora Aqua - Particle System
- * Floating particles (bubbles, plankton) with GPU optimization
- * Creates immersive underwater atmosphere
+ * BIOLUMINESCENT DEPTH-REACTIVE PARTICLES
+ * 
+ * Particles are not decoration — they are life.
+ * They brighten near the camera (proximity glow).
+ * They pulse with organic rhythm in deep zones.
+ * They migrate upward in slow spirals like plankton.
  */
 
 import * as THREE from 'three';
@@ -18,6 +22,7 @@ export class ParticleSystem {
     this.speed = options.speed || 0.5;
     this.color1 = options.color1 || 0x22d3ee;
     this.color2 = options.color2 || 0x67e8f9;
+    this.bioluminescent = options.bioluminescent !== false;
     
     this.init();
   }
@@ -37,22 +42,18 @@ export class ParticleSystem {
       const i3 = i * 3;
       const i4 = i * 4;
       
-      // Random positions
       positions[i3] = (Math.random() - 0.5) * this.spread.x;
       positions[i3 + 1] = (Math.random() - 0.5) * this.spread.y;
       positions[i3 + 2] = (Math.random() - 0.5) * this.spread.z;
       
-      // Random colors between color1 and color2
       const mixRatio = Math.random();
       const mixedColor = color1.clone().lerp(color2, mixRatio);
       colors[i3] = mixedColor.r;
       colors[i3 + 1] = mixedColor.g;
       colors[i3 + 2] = mixedColor.b;
       
-      // Random sizes
       sizes[i] = Math.random() * this.size + 0.1;
       
-      // Random values for animation variation
       randoms[i4] = Math.random();
       randoms[i4 + 1] = Math.random();
       randoms[i4 + 2] = Math.random();
@@ -69,11 +70,19 @@ export class ParticleSystem {
         uTime: { value: 0 },
         uSpeed: { value: this.speed },
         uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+        uCameraPos: { value: new THREE.Vector3(0, 20, 80) },
+        uProximityRadius: { value: 40.0 },
+        uBioluminescent: { value: this.bioluminescent ? 1.0 : 0.0 },
+        uDepthZone: { value: 0.0 },
       },
       vertexShader: `
         uniform float uTime;
         uniform float uSpeed;
         uniform float uPixelRatio;
+        uniform vec3 uCameraPos;
+        uniform float uProximityRadius;
+        uniform float uBioluminescent;
+        uniform float uDepthZone;
         
         attribute float size;
         attribute vec4 aRandom;
@@ -81,37 +90,47 @@ export class ParticleSystem {
         
         varying vec3 vColor;
         varying float vOpacity;
+        varying float vProximityGlow;
         
         void main() {
           vColor = color;
           
           vec3 pos = position;
-          
-          // Floating animation
           float time = uTime * uSpeed;
           
-          // Vertical bobbing
+          // Vertical bobbing — plankton-like
           pos.y += sin(time * (0.5 + aRandom.x * 0.5) + aRandom.y * 6.28) * (1.0 + aRandom.z * 2.0);
           
           // Horizontal drift
           pos.x += sin(time * 0.3 + aRandom.z * 6.28) * (0.5 + aRandom.w * 1.5);
           pos.z += cos(time * 0.25 + aRandom.x * 6.28) * (0.5 + aRandom.y * 1.5);
           
-          // Spiral motion for some particles
+          // Spiral migration (slow upward drift like real plankton)
           float spiral = time * 0.5 + aRandom.w * 6.28;
           pos.x += cos(spiral) * aRandom.x * 2.0;
           pos.z += sin(spiral) * aRandom.y * 2.0;
           
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
           
-          // Size attenuation
-          gl_PointSize = size * uPixelRatio * (300.0 / -mvPosition.z);
-          gl_PointSize = clamp(gl_PointSize, 1.0, 50.0);
+          // ═══ BIOLUMINESCENT PROXIMITY GLOW ═══
+          // Particles brighten when camera approaches — like disturbing bioluminescent life
+          float distToCamera = length((modelMatrix * vec4(pos, 1.0)).xyz - uCameraPos);
+          float proximity = 1.0 - smoothstep(0.0, uProximityRadius, distToCamera);
+          vProximityGlow = proximity * proximity * uBioluminescent;
           
-          // Opacity based on depth
+          // Size — larger when close (proximity bloom)
+          float baseSize = size * uPixelRatio * (300.0 / -mvPosition.z);
+          baseSize *= 1.0 + vProximityGlow * 1.5;
+          gl_PointSize = clamp(baseSize, 1.0, 60.0);
+          
+          // Opacity — depth-based + proximity boost
           float depth = -mvPosition.z;
           vOpacity = smoothstep(100.0, 20.0, depth);
           vOpacity *= 0.3 + aRandom.x * 0.7;
+          
+          // In deep zones, bioluminescence pulses more intensely
+          float deepPulse = sin(time * 2.0 + aRandom.z * 6.28) * 0.3 * uDepthZone;
+          vOpacity += deepPulse * uBioluminescent;
           
           gl_Position = projectionMatrix * mvPosition;
         }
@@ -119,9 +138,9 @@ export class ParticleSystem {
       fragmentShader: `
         varying vec3 vColor;
         varying float vOpacity;
+        varying float vProximityGlow;
         
         void main() {
-          // Circular particle with soft glow edge
           vec2 center = gl_PointCoord - 0.5;
           float dist = length(center);
           
@@ -129,16 +148,24 @@ export class ParticleSystem {
           
           // Soft circular falloff with glow
           float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
-          alpha = pow(alpha, 1.5); // Softer falloff
+          alpha = pow(alpha, 1.5);
           alpha *= vOpacity;
           
-          // Inner glow - brighter center
+          // ═══ BIOLUMINESCENT GLOW ═══
+          // Inner core brightens near camera
           float innerGlow = 1.0 - smoothstep(0.0, 0.25, dist);
+          float glowIntensity = 0.5 + vProximityGlow * 2.0;
           
-          // Color with glow
           vec3 color = vColor;
-          color += innerGlow * 0.5; // Bright center
+          color += innerGlow * glowIntensity;
+          
+          // Proximity adds white-cyan bloom
+          color += vProximityGlow * vec3(0.3, 0.8, 1.0) * 0.5;
+          
           color = clamp(color, 0.0, 1.0);
+          
+          // Alpha boost from proximity
+          alpha = clamp(alpha + vProximityGlow * 0.3, 0.0, 1.0);
           
           gl_FragColor = vec4(color, alpha * 0.9);
         }
@@ -152,8 +179,17 @@ export class ParticleSystem {
     this.mesh = new THREE.Points(this.geometry, this.material);
   }
 
-  update(delta, elapsed) {
+  update(delta, elapsed, cameraPos) {
     this.material.uniforms.uTime.value = elapsed;
+    if (cameraPos && this.material.uniforms.uCameraPos) {
+      this.material.uniforms.uCameraPos.value.copy(cameraPos);
+    }
+  }
+
+  setDepthZone(zoneValue) {
+    if (this.material.uniforms.uDepthZone) {
+      this.material.uniforms.uDepthZone.value = zoneValue;
+    }
   }
 
   getMesh() {
