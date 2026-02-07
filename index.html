@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Aurora Aqua - Leading aquaculture solutions with innovative technology for sustainable fish farming and aqua farming in India.">
+  <meta name="keywords" content="aquaculture, aqua farming, fish farming, sustainable aquaculture, India">
+  <meta name="author" content="Aurora Aqua">
+  <meta property="og:title" content="Aurora Aqua - Future of Aquaculture">
+  <meta property="og:description" content="Experience the future of sustainable aquaculture with cutting-edge technology.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#0a1628">
+  <title>Aurora Aqua | Future of Aquaculture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Critical CSS for immediate display */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: linear-gradient(180deg, #041e42 0%, #0a3d62 30%, #0c4a6e 60%, #0891b2 100%);
+      background-attachment: fixed;
+      color: #fff; 
+      min-height: 100vh;
+    }
+    .loader { 
+      position: fixed; 
+      inset: 0; 
+      z-index: 1000; 
+      background: #041e42;
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+    }
+    .loader.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .canvas-container { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+  </style>
+</head>
+<body data-barba="wrapper">
+  <!-- Loader -->
+  <div class="loader" id="loader">
+    <div class="loader__inner">
+      <div class="loader__logo">
+        <svg viewBox="0 0 100 100" class="loader__icon">
+          <circle cx="50" cy="50" r="45" class="loader__circle" />
+        </svg>
+        <span class="loader__text">Aurora Aqua</span>
+      </div>
+      <div class="loader__progress">
+        <div class="loader__bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three.js Canvas Container -->
+  <div class="canvas-container" id="canvas-container"></div>
+
+  <!-- Navigation -->
+  <header class="header">
+    <nav class="nav">
+      <a href="/" class="nav__logo" data-magnetic>
+        <span class="nav__logo-text">Aurora<span class="nav__logo-accent">Aqua</span></span>
+      </a>
+      <ul class="nav__menu">
+        <li><a href="/" class="nav__link active" data-magnetic>Home</a></li>
+        <li><a href="/about.html" class="nav__link" data-magnetic>About</a></li>
+        <li><a href="/services.html" class="nav__link" data-magnetic>Services</a></li>
+        <li><a href="/contact.html" class="nav__link nav__link--cta" data-magnetic>Contact</a></li>
+      </ul>
+      <button class="nav__toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span class="nav__toggle-line"></span>
+        <span class="nav__toggle-line"></span>
+        <span class="nav__toggle-line"></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <ul class="mobile-menu__list">
+      <li><a href="/" class="mobile-menu__link active">Home</a></li>
+      <li><a href="/about.html" class="mobile-menu__link">About</a></li>
+      <li><a href="/services.html" class="mobile-menu__link">Services</a></li>
+      <li><a href="/contact.html" class="mobile-menu__link">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- Page Content -->
+  <main data-barba="container" data-barba-namespace="home">
+    
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+      <div class="hero__content">
+        <div class="hero__tag">
+          <span class="hero__tag-line"></span>
+          <span class="hero__tag-text">Aurora Aqua · Aquaculture Platform</span>
+        </div>
+        <h1 class="hero__title">
+          <span class="hero__title-line">
+            <span class="hero__title-word" data-split>Aquaculture that</span>
+          </span>
+          <span class="hero__title-line">
+            <span class="hero__title-word hero__title-word--accent" data-split>runs like a</span>
+          </span>
+          <span class="hero__title-line">
+            <span class="hero__title-word" data-split>modern business.</span>
+          </span>
+        </h1>
+        <p class="hero__description" data-split>
+          Data-driven aquaculture—helping farms, integrators and partners 
+          move from scattered logs to structured, visible operations.
+        </p>
+        <div class="hero__cta">
+          <a href="/services.html" class="btn btn--primary" data-magnetic>
+            <span class="btn__text">Explore Solutions</span>
+            <span class="btn__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </a>
+          <a href="/about.html" class="btn btn--ghost" data-magnetic>
+            <span class="btn__text">Learn More</span>
+          </a>
+        </div>
+      </div>
+      <div class="hero__scroll">
+        <span class="hero__scroll-text">Scroll to explore</span>
+        <div class="hero__scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section class="section section--vision" id="vision">
+      <div class="container">
+        <div class="section__header">
+          <span class="section__label">What Aurora Aqua Covers</span>
+          <h2 class="section__title" data-split>
+            Connected layers from daily operations to intelligence and partner integrations
+          </h2>
+        </div>
+        <div class="vision__grid">
+          <div class="vision__card" data-parallax>
+            <div class="vision__card-icon">
+              <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="32" cy="32" r="28" />
+                <path d="M20 32c0-6.627 5.373-12 12-12s12 5.373 12 12" />
+                <circle cx="32" cy="32" r="4" fill="currentColor" />
+              </svg>
+            </div>
+            <h3 class="vision__card-title">Farm Operations</h3>
+            <p class="vision__card-text">Daily reality inside ponds and crops—logs, tasks, checklists, expenses and inventory. Aqua Sahay lives here.</p>
+          </div>
+          <div class="vision__card" data-parallax>
+            <div class="vision__card-icon">
+              <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M32 8v48M8 32h48" />
+                <circle cx="32" cy="32" r="16" />
+                <circle cx="32" cy="32" r="24" />
+              </svg>
+            </div>
+            <h3 class="vision__card-title">Intelligence</h3>
+            <p class="vision__card-text">Turning raw logs into decision-ready signals around risk, opportunity, seasonality and pond performance.</p>
+          </div>
+          <div class="vision__card" data-parallax>
+            <div class="vision__card-icon">
+              <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="12" y="12" width="40" height="40" rx="4" />
+                <path d="M12 24h40M24 12v40" />
+              </svg>
+            </div>
+            <h3 class="vision__card-title">Partner Integrations</h3>
+            <p class="vision__card-text">Sensors, labs, buyers and other systems that plug into the same aquaculture data backbone through clean APIs.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What We Do Section -->
+    <section class="section section--whatwedo" id="whatwedo">
+      <div class="container">
+        <div class="whatwedo__wrapper">
+          <div class="whatwedo__content">
+            <span class="section__label">Operator-First Principles</span>
+            <h2 class="section__title" data-split>
+              Built for how farms actually run
+            </h2>
+            <p class="whatwedo__text" data-split>
+              Every module is shaped with on-ground teams so the workflow fits 
+              how farms actually run. One backbone for sites, ponds and crops 
+              so decisions stay aligned.
+            </p>
+            <ul class="whatwedo__list">
+              <li class="whatwedo__item" data-stagger>
+                <span class="whatwedo__item-number">01</span>
+                <span class="whatwedo__item-text">Field-Tested Workflows</span>
+              </li>
+              <li class="whatwedo__item" data-stagger>
+                <span class="whatwedo__item-number">02</span>
+                <span class="whatwedo__item-text">Offline-First Field Use</span>
+              </li>
+              <li class="whatwedo__item" data-stagger>
+                <span class="whatwedo__item-number">03</span>
+                <span class="whatwedo__item-text">Unified Data Backbone</span>
+              </li>
+              <li class="whatwedo__item" data-stagger>
+                <span class="whatwedo__item-number">04</span>
+                <span class="whatwedo__item-text">Clean Partner APIs</span>
+              </li>
+            </ul>
+          </div>
+          <div class="whatwedo__visual" id="whatwedo-visual">
+            <!-- 3D element placeholder -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Preview Section -->
+    <section class="section section--services-preview" id="services-preview">
+      <div class="container">
+        <div class="section__header section__header--center">
+          <span class="section__label">Our Services</span>
+          <h2 class="section__title" data-split>
+            Comprehensive aquaculture solutions
+          </h2>
+        </div>
+        <div class="services-preview__grid">
+          <article class="service-card" data-tilt>
+            <div class="service-card__image">
+              <div class="service-card__3d" data-service="aqua-sahay"></div>
+            </div>
+            <div class="service-card__content">
+              <h3 class="service-card__title">Aqua Sahay</h3>
+              <p class="service-card__text">Farm-operations app for ponds and crops. Structured logs, tasks and visibility around daily aquaculture work.</p>
+              <a href="/services.html" class="service-card__link">
+                Learn more
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+          </article>
+          <article class="service-card" data-tilt>
+            <div class="service-card__image">
+              <div class="service-card__3d" data-service="aqua-intelligence"></div>
+            </div>
+            <div class="service-card__content">
+              <h3 class="service-card__title">Aqua Intelligence</h3>
+              <p class="service-card__text">Intelligence layer for farms and partners—dashboards, alerts and AI-powered recommendations.</p>
+              <a href="/services.html" class="service-card__link">
+                Learn more
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+          </article>
+          <article class="service-card" data-tilt>
+            <div class="service-card__image">
+              <div class="service-card__3d" data-service="aqua-connect"></div>
+            </div>
+            <div class="service-card__content">
+              <h3 class="service-card__title">Aqua Connect</h3>
+              <p class="service-card__text">A clean way for devices, labs and partner systems to plug into the same aquaculture data backbone.</p>
+              <a href="/services.html" class="service-card__link">
+                Learn more
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="section section--stats" id="stats">
+      <div class="container">
+        <div class="stats__grid">
+          <div class="stat" data-counter>
+            <span class="stat__number" data-target="15">0</span>
+            <span class="stat__suffix">+</span>
+            <span class="stat__label">Years Experience</span>
+          </div>
+          <div class="stat" data-counter>
+            <span class="stat__number" data-target="500">0</span>
+            <span class="stat__suffix">+</span>
+            <span class="stat__label">Farms Established</span>
+          </div>
+          <div class="stat" data-counter>
+            <span class="stat__number" data-target="50">0</span>
+            <span class="stat__suffix">K+</span>
+            <span class="stat__label">Tonnes Annually</span>
+          </div>
+          <div class="stat" data-counter>
+            <span class="stat__number" data-target="98">0</span>
+            <span class="stat__suffix">%</span>
+            <span class="stat__label">Client Satisfaction</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section section--cta" id="cta">
+      <div class="container">
+        <div class="cta__content">
+          <h2 class="cta__title" data-split>Ready to transform your aquaculture business?</h2>
+          <p class="cta__text">Partner with Aurora Aqua and discover the potential of sustainable fish farming.</p>
+          <a href="/contact.html" class="btn btn--primary btn--large" data-magnetic>
+            <span class="btn__text">Get Started Today</span>
+            <span class="btn__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="/" class="footer__logo">Aurora<span>Aqua</span></a>
+          <p class="footer__tagline">Data-driven aquaculture. Coastal Andhra, Tamil Nadu and Odisha with on-ground teams.</p>
+        </div>
+        <div class="footer__links">
+          <h4 class="footer__title">Quick Links</h4>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about.html">About</a></li>
+            <li><a href="/services.html">Services</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer__links">
+          <h4 class="footer__title">Products</h4>
+          <ul>
+            <li><a href="/services.html">Aqua Sahay</a></li>
+            <li><a href="/services.html">Aqua Intelligence</a></li>
+            <li><a href="/services.html">Aqua Connect</a></li>
+            <li><a href="https://app.auroraaqua.in" target="_blank">Open Dashboard</a></li>
+          </ul>
+        </div>
+        <div class="footer__contact">
+          <h4 class="footer__title">Get in Touch</h4>
+          <p>contact@auroraaqua.in</p>
+          <p>+91 98765 43210</p>
+          <div class="footer__social">
+            <a href="#" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+            </a>
+            <a href="#" aria-label="Twitter">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+              </svg>
+            </a>
+            <a href="#" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 Aurora Aqua. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cursor -->
+  <div class="cursor" id="cursor">
+    <div class="cursor__inner"></div>
+  </div>
+
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+</html>

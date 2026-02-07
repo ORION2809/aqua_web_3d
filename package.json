@@ -1,0 +1,30 @@
+{
+  "name": "aurora-aqua",
+  "version": "1.0.0",
+  "description": "Aurora Aqua - 3D Immersive Aquaculture Website",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0",
+    "gsap": "^3.12.4",
+    "@barba/core": "^2.9.7",
+    "lenis": "^1.0.42"
+  },
+  "devDependencies": {
+    "vite": "^5.0.10"
+  },
+  "keywords": [
+    "threejs",
+    "gsap",
+    "barba",
+    "lenis",
+    "3d",
+    "aquaculture"
+  ],
+  "author": "Aurora Aqua",
+  "license": "MIT"
+}
