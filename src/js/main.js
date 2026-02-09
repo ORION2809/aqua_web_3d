@@ -11,7 +11,6 @@ import { PageTransitions } from './barba.js';
 import { Animations } from './animations.js';
 import { Navigation } from './navigation.js';
 import { CustomCursor } from './cursor.js';
-import { Loader } from './loader.js';
 import { FormHandler } from './form.js';
 
 // Page scenes
@@ -36,21 +35,12 @@ class AuroraAqua {
   }
 
   init() {
-    try {
-      // Initialize loader
-      const loader = new Loader(() => {
-        this.onLoadComplete();
-      });
-
-      // Start loading
-      this.preload().then(() => {
-        loader.complete();
-      });
-    } catch (error) {
-      console.error('Init error:', error);
-      // Skip loader and initialize directly
+    // Go straight into the page — no loader
+    this.preload().then(() => {
       this.onLoadComplete();
-    }
+    }).catch(() => {
+      this.onLoadComplete();
+    });
   }
 
   async preload() {

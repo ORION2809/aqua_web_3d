@@ -25,35 +25,10 @@
       color: #fff; 
       min-height: 100vh;
     }
-    .loader { 
-      position: fixed; 
-      inset: 0; 
-      z-index: 1000; 
-      background: #041e42;
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-    }
-    .loader.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     .canvas-container { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   </style>
 </head>
 <body data-barba="wrapper">
-  <!-- Loader -->
-  <div class="loader" id="loader">
-    <div class="loader__inner">
-      <div class="loader__logo">
-        <svg viewBox="0 0 100 100" class="loader__icon">
-          <circle cx="50" cy="50" r="45" class="loader__circle" />
-        </svg>
-        <span class="loader__text">Aurora Aqua</span>
-      </div>
-      <div class="loader__progress">
-        <div class="loader__bar"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- Three.js Canvas Container -->
   <div class="canvas-container" id="canvas-container"></div>
 
