@@ -3,7 +3,7 @@ import { resolve } from 'path';
 
 export default defineConfig({
   root: './',
-  base: '/',
+  base: '/aqua_web_3d/',
   publicDir: 'public',
   build: {
     outDir: 'dist',

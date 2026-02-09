@@ -45,7 +45,7 @@ export class Animations {
       // Skip if already processed
       if (element.classList.contains('split-processed')) return;
       
-      const text = element.textContent;
+      const text = element.textContent.trim().replace(/\s+/g, ' ');
       const words = text.split(' ');
       
       element.innerHTML = words.map(word => 
@@ -426,8 +426,8 @@ export class Animations {
   animateHeroEntrance() {
     const tl = gsap.timeline();
     
-    // Hero tag
-    tl.to('.hero__tag', {
+    // Hero tag text
+    tl.to('.hero__tag-text', {
       y: 0,
       opacity: 1,
       duration: 0.8,

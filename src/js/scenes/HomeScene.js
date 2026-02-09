@@ -25,6 +25,8 @@ export class HomeScene {
     this.isAnimating = false;
     this.animationId = null;
     
+
+    
     // Scene components
     this.renderer = null;
     this.scene = null;
@@ -222,13 +224,37 @@ export class HomeScene {
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     
+    // Generate a round bubble texture
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    const center = 32;
+    const radius = 28;
+    
+    // Soft radial gradient — bright center fading to transparent edge
+    const gradient = ctx.createRadialGradient(center, center, 0, center, center, radius);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    gradient.addColorStop(0.3, 'rgba(103, 232, 249, 0.8)');
+    gradient.addColorStop(0.7, 'rgba(103, 232, 249, 0.3)');
+    gradient.addColorStop(1, 'rgba(103, 232, 249, 0)');
+    
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(center, center, radius, 0, Math.PI * 2);
+    ctx.fill();
+    
+    const bubbleTexture = new THREE.CanvasTexture(canvas);
+    
     const material = new THREE.PointsMaterial({
       color: 0x67e8f9,
-      size: 1.5,
+      size: 3,
+      map: bubbleTexture,
       transparent: true,
-      opacity: 0, // Hidden until Phase 4
+      opacity: 0, // Hidden until descent
       blending: THREE.AdditiveBlending,
-      depthWrite: false
+      depthWrite: false,
+      sizeAttenuation: true
     });
     
     this.particles = new THREE.Points(geometry, material);
@@ -300,198 +326,75 @@ export class HomeScene {
   start() {
     if (this.isAnimating) return;
     
-    console.log('🎬 CINEMATIC SEQUENCE STARTING');
+    console.log('🌊 Starting underwater scene');
     this.isAnimating = true;
-    this.startTime = this.clock.getElapsedTime();
     this.clock.start();
+    this.startTime = this.clock.getElapsedTime();
     
-    // PHASE 0: Lock everything
-    this.lockReality();
+    // Set up underwater environment instantly
+    this.setupUnderwaterEnvironment();
     
-    // Begin the sequence
+    // Begin render loop
     this.animate();
     
-    // Start the timeline
-    this.runCinematicTimeline();
+    // Run the intro: camera sinks, particles appear, hero text emerges
+    this.runUnderwaterIntro();
   }
 
-  lockReality() {
-    console.log('🔒 Phase 0: Reality locked');
+  setupUnderwaterEnvironment() {
+    // Camera starts just below the surface
+    this.camera.position.set(0, -10, 60);
+    this.camera.lookAt(0, -40, 0);
     
-    document.body.classList.add('lock-scroll', 'cinematic-mode');
+    // Underwater fog and lighting
+    this.scene.fog = new THREE.FogExp2(0x021020, 0.015);
+    this.renderer.toneMappingExposure = 0.6;
+    this.underwaterLight.intensity = 1.5;
     
-    // Hide hero content initially for dramatic reveal
-    gsap.set('.hero__content', { opacity: 0, y: 30 });
-    gsap.set('.hero__tag', { opacity: 0 });
-    gsap.set('.hero__title-word', { opacity: 0, y: 100 });
-    gsap.set('.hero__description', { opacity: 0 });
-    gsap.set('.hero__cta', { opacity: 0 });
+    // Collapse water surface (already breached)
+    if (this.waterMaterial) {
+      this.waterMaterial.uniforms.uRupture.value = 1;
+    }
     
-    // Notify Lenis to stop (if available)
-    window.dispatchEvent(new CustomEvent('lockScroll'));
+    this.hasBreached = true;
+    this.phase = 'descent';
+    
+    // Body classes
+    document.body.classList.add('surface-breached', 'underwater-mode');
+    
+    // Hide hero elements for the animated reveal
+    gsap.set('.hero__tag-text', { opacity: 0, y: 20 });
+    gsap.set('.hero__title-word', { opacity: 0, y: 60 });
+    gsap.set('.hero__description', { opacity: 0, y: 20 });
+    gsap.set('.hero__cta', { opacity: 0, y: 20 });
   }
 
-  runCinematicTimeline() {
+  runUnderwaterIntro() {
     const tl = gsap.timeline();
     
     // ─────────────────────────────────────────────────────────
-    // PHASE 1: ARRIVAL (0s → 2s)
-    // "This is calm... too calm."
+    // Camera sinks deeper (0s → 4s)
     // ─────────────────────────────────────────────────────────
     
-    tl.call(() => {
-      console.log('🎬 Phase 1: Arrival');
-      this.phase = 'arrival';
-    });
-    
-    // Fade in hero content gently
-    tl.to('.hero__content', {
-      opacity: 1,
-      y: 0,
-      duration: 1.5,
-      ease: 'power2.out'
-    }, 0.5);
-    
-    tl.to('.hero__tag', { opacity: 1, duration: 0.8 }, 0.8);
-    tl.to('.hero__title-word', { 
-      opacity: 1, 
-      y: 0, 
-      duration: 0.8, 
-      stagger: 0.1,
-      ease: 'power2.out'
-    }, 1);
-    
-    // ─────────────────────────────────────────────────────────
-    // PHASE 2: TENSION (2s → 5s)
-    // "Something is wrong."
-    // ─────────────────────────────────────────────────────────
-    
-    tl.call(() => {
-      console.log('🎬 Phase 2: Tension building');
-      this.phase = 'tension';
-    }, [], 2);
-    
-    // Water tension builds
-    tl.to(this.waterMaterial.uniforms.uPhase, {
-      value: 1,
-      duration: 3,
-      ease: 'power1.in'
-    }, 2);
-    
-    // Camera approaches water
-    tl.to(this.camera.position, {
-      z: 90,
-      duration: 3,
-      ease: 'power1.inOut'
-    }, 2);
-    
-    // UI fades - loss of control
-    tl.to('.hero__content', {
-      opacity: 0.4,
-      duration: 2
-    }, 3);
-    
-    // Hide cursor
-    tl.call(() => {
-      document.body.classList.add('hide-cursor');
-    }, [], 3);
-    
-    // ─────────────────────────────────────────────────────────
-    // PHASE 3: THE ILLEGAL MOMENT (5s → 7s)
-    // "What the hell just happened?"
-    // ─────────────────────────────────────────────────────────
-    
-    // T = 5.0s — Lock harder
-    tl.call(() => {
-      console.log('🚨 Phase 3: ILLEGAL MOMENT');
-      this.phase = 'illegal';
-      document.body.classList.add('no-pointer');
-    }, [], 5);
-    
-    // T = 5.1s — Camera LUNGE (aggressive)
-    tl.to(this.camera.position, {
-      z: 20,
-      y: 30,
-      duration: 0.4,
-      ease: 'power4.in'
-    }, 5.1);
-    
-    // T = 5.4s — Canvas VIOLATES DOM hierarchy
-    tl.call(() => {
-      console.log('💥 Canvas z-index violation!');
-      const canvas = document.querySelector('.canvas-container');
-      if (canvas) canvas.style.zIndex = '999';
-    }, [], 5.4);
-    
-    // T = 5.5s — Surface RUPTURE
-    tl.to(this.waterMaterial.uniforms.uRupture, {
-      value: 1,
-      duration: 0.5,
-      ease: 'power2.in'
-    }, 5.5);
-    
-    // T = 5.8s — Camera crosses plane (NO EASING - this must feel WRONG)
-    tl.call(() => {
-      this.camera.position.y = -10;
-    }, [], 5.8);
-    
-    // T = 6.0s — UI DROWNS (sinks, doesn't fade)
-    tl.to('.hero__content', {
-      y: 80,
-      opacity: 0,
-      duration: 0.3,
-      ease: 'power2.in'
-    }, 6.0);
-    
-    // T = 6.3s — Darkness hit
-    tl.call(() => {
-      console.log('🌑 Darkness hit');
-      // Add fog suddenly
-      this.scene.fog = new THREE.FogExp2(0x021020, 0.015);
-      this.renderer.toneMappingExposure = 0.6;
-      
-      // Underwater light activates
-      this.underwaterLight.intensity = 1.5;
-    }, [], 6.3);
-    
-    // T = 6.8s — Surface breach event
-    tl.call(() => {
-      console.log('🌊 SURFACE BREACH EVENT');
-      this.hasBreached = true;
-      window.dispatchEvent(new CustomEvent('surfaceBreach'));
-      document.body.classList.add('surface-breached');
-    }, [], 6.8);
-    
-    // ─────────────────────────────────────────────────────────
-    // PHASE 4: DESCENT (7s → 11s)
-    // "I'm inside it now."
-    // ─────────────────────────────────────────────────────────
-    
-    tl.call(() => {
-      console.log('🎬 Phase 4: Descent');
-      this.phase = 'descent';
-    }, [], 7);
-    
-    // Camera descends smoothly
     tl.to(this.camera.position, {
       y: -160,
-      z: 60,
+      z: 55,
       duration: 4,
       ease: 'power1.out'
-    }, 7);
+    }, 0);
     
     // Particles fade in
     tl.to(this.particles.material, {
       opacity: 0.6,
-      duration: 2
-    }, 7.5);
+      duration: 2.5
+    }, 0.5);
     
-    // Light shafts appear
+    // Light shafts appear staggered
     this.lightShafts.forEach((shaft, i) => {
       tl.to(shaft.material, {
         opacity: 0.15,
         duration: 1.5
-      }, 7.5 + i * 0.3);
+      }, 0.5 + i * 0.3);
     });
     
     // Depth rings fade in as camera passes
@@ -499,54 +402,65 @@ export class HomeScene {
       tl.to(ring.material, {
         opacity: 0.3,
         duration: 0.5
-      }, 8 + i * 0.8);
+      }, 1 + i * 0.8);
     });
     
     // ─────────────────────────────────────────────────────────
-    // PHASE 5: CLAIM (11s → 15s)
-    // "This site owns me."
+    // Camera settles + hero text emerges (3s → 6s)
     // ─────────────────────────────────────────────────────────
     
-    tl.call(() => {
-      console.log('🎬 Phase 5: Claim');
-      this.phase = 'claim';
-      document.body.classList.add('underwater-mode');
-    }, [], 11);
-    
-    // Camera settles
+    // Camera eases to final resting position
     tl.to(this.camera.position, {
       y: -120,
       z: 50,
-      duration: 3,
+      duration: 2.5,
       ease: 'power2.out'
-    }, 11);
+    }, 3.5);
     
-    // Reset canvas z-index (but underwater mode stays)
-    tl.call(() => {
-      const canvas = document.querySelector('.canvas-container');
-      if (canvas) canvas.style.zIndex = '1';
-    }, [], 12);
+    // Tag text fades in
+    tl.to('.hero__tag-text', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: 'power2.out'
+    }, 3);
     
-    // New UI appears - underwater styled
-    tl.call(() => {
-      // Show underwater hero content
-      gsap.set('.hero__content', { y: 0 });
-      gsap.to('.hero__content', {
-        opacity: 1,
-        duration: 1.5,
-        ease: 'power2.out'
-      });
-    }, [], 12.5);
+    // Title words stagger in
+    tl.to('.hero__title-word', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      stagger: 0.1,
+      ease: 'power2.out'
+    }, 3.5);
     
-    // Unlock controls
+    // Description
+    tl.to('.hero__description', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: 'power2.out'
+    }, 4);
+    
+    // CTA buttons
+    tl.to('.hero__cta', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: 'power2.out'
+    }, 4.3);
+    
+    // ─────────────────────────────────────────────────────────
+    // Done — unlock scroll (6s)
+    // ─────────────────────────────────────────────────────────
+    
     tl.call(() => {
-      console.log('🔓 Controls unlocked');
+      console.log('🌊 Underwater intro complete');
       this.phase = 'complete';
       
-      document.body.classList.remove('lock-scroll', 'no-pointer', 'hide-cursor', 'cinematic-mode');
-      window.dispatchEvent(new CustomEvent('unlockScroll'));
+      window.dispatchEvent(new CustomEvent('surfaceBreach'));
       window.dispatchEvent(new CustomEvent('cinematicComplete'));
-    }, [], 14.5);
+    }, [], 6);
   }
 
   animate() {
@@ -562,13 +476,8 @@ export class HomeScene {
       this.waterMaterial.uniforms.uTime.value = time;
     }
     
-    // Phase 1: Subtle camera drift
-    if (this.phase === 'arrival') {
-      this.camera.position.y = 120 + Math.sin(time * 0.2) * 0.3;
-    }
-    
-    // Phase 4+: Animate particles
-    if (this.phase === 'descent' || this.phase === 'claim' || this.phase === 'complete') {
+    // Animate particles and light shafts
+    if (this.phase === 'descent' || this.phase === 'complete') {
       this.updateParticles(time);
       this.updateLightShafts(time);
     }
